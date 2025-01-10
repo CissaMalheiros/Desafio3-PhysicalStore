@@ -1,6 +1,17 @@
-import fetch from 'node-fetch';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+
+interface GeocodingResponse {
+  status: string;
+  results: Array<{
+    geometry: {
+      location: {
+        lat: number;
+        lng: number;
+      };
+    };
+  }>;
+}
 
 @Injectable()
 export class GeocodingService {
@@ -16,13 +27,14 @@ export class GeocodingService {
 
   async getCoordinates(address: string): Promise<{ lat: number; lng: number }> {
     this.logger.log(`Buscando coordenadas para o endereço: ${address}`);
+    const fetch = (await import('node-fetch')).default;
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${this.googleApiKey}`;
     const response = await fetch(url);
     if (!response.ok) {
       this.logger.error(`Erro ao buscar coordenadas para o endereço: ${address}`);
       throw new Error('Erro ao buscar coordenadas');
     }
-    const data = await response.json();
+    const data = await response.json() as GeocodingResponse;
     if (data.status !== 'OK') {
       this.logger.error(`Erro ao buscar coordenadas: ${data.status}`);
       throw new Error('Erro ao buscar coordenadas');

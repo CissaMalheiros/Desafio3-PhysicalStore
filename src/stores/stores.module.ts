@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule } from '@nestjs/config';
 import { StoreSchema } from './schemas/store.schema';
 import { StoresService } from './stores.service';
 import { StoresController } from './stores.controller';
@@ -8,8 +9,11 @@ import { GeocodingService } from './services/geocoding.service';
 import { CorreiosService } from './services/correios.service';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: 'Store', schema: StoreSchema }])],
+  imports: [
+    MongooseModule.forFeature([{ name: 'Store', schema: StoreSchema }]),
+    ConfigModule,
+  ],
   controllers: [StoresController],
   providers: [StoresService, CepService, GeocodingService, CorreiosService],
 })
-export class StoresModule {}
+export class StoresModule { }

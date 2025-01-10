@@ -1,4 +1,3 @@
-import fetch from 'node-fetch';
 import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
@@ -7,6 +6,7 @@ export class CorreiosService {
 
   async getFreightPrice(cepOrigem: string, cepDestino: string, peso: number, comprimento: number, altura: number, largura: number): Promise<any> {
     this.logger.log(`Buscando preço do frete de ${cepOrigem} para ${cepDestino}`);
+    const fetch = (await import('node-fetch')).default;
     const url = `https://www.correios.com.br/@@precosEPrazosView?cepOrigem=${cepOrigem}&cepDestino=${cepDestino}&peso=${peso}&comprimento=${comprimento}&altura=${altura}&largura=${largura}`;
     const response = await fetch(url);
     if (!response.ok) {

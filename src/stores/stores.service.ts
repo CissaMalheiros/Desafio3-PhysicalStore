@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Store } from './interfaces/store.interface';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { CepService } from './services/cep.service';
@@ -15,7 +15,7 @@ export class StoresService {
     private readonly cepService: CepService,
     private readonly geocodingService: GeocodingService,
     private readonly correiosService: CorreiosService,
-  ) {}
+  ) { }
 
   async create(createStoreDto: CreateStoreDto): Promise<Store> {
     const createdStore = new this.storeModel(createStoreDto);
@@ -71,7 +71,10 @@ export class StoresService {
   }
 
   async findById(id: string): Promise<Store> {
-    return this.storeModel.findById(id).exec();
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Invalid ID format');
+    }
+    return this.storeModel.findById(new Types.ObjectId(id)).exec();
   }
 
   async findByState(state: string): Promise<Store[]> {
