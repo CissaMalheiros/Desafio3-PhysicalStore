@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
 
 interface GeocodingResponse {
   status: string;
@@ -27,14 +28,13 @@ export class GeocodingService {
 
   async getCoordinates(address: string): Promise<{ lat: number; lng: number }> {
     this.logger.log(`Buscando coordenadas para o endereço: ${address}`);
-    const fetch = (await import('node-fetch')).default;
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${this.googleApiKey}`;
-    const response = await fetch(url);
-    if (!response.ok) {
+    const response = await axios.get(url);
+    if (response.status !== 200) {
       this.logger.error(`Erro ao buscar coordenadas para o endereço: ${address}`);
       throw new Error('Erro ao buscar coordenadas');
     }
-    const data = await response.json() as GeocodingResponse;
+    const data = response.data as GeocodingResponse;
     if (data.status !== 'OK') {
       this.logger.error(`Erro ao buscar coordenadas: ${data.status}`);
       throw new Error('Erro ao buscar coordenadas');

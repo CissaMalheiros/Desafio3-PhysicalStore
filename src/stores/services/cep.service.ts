@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import axios from 'axios';
 
 interface Address {
   cep: string;
@@ -20,13 +21,12 @@ export class CepService {
 
   async getAddressByCep(cep: string): Promise<Address> {
     this.logger.log(`Buscando endereço para o CEP: ${cep}`);
-    const fetch = (await import('node-fetch')).default;
-    const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-    if (!response.ok) {
+    const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+    if (response.status !== 200) {
       this.logger.error(`Erro ao buscar endereço para o CEP: ${cep}`);
       throw new Error('Erro ao buscar endereço');
     }
-    const data = await response.json() as Address;
+    const data = response.data as Address;
     if (data.erro) {
       this.logger.error(`CEP não encontrado: ${cep}`);
       throw new Error('CEP não encontrado');
