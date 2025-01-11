@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import axios from 'axios';
 
 interface Address {
@@ -19,19 +19,39 @@ interface Address {
 export class CepService {
   private readonly logger = new Logger(CepService.name);
 
+  private isValidCep(cep: string): boolean {
+    const cepRegex = /^[0-9]{5}-?[0-9]{3}$/;
+    return cepRegex.test(cep);
+  }
+
   async getAddressByCep(cep: string): Promise<Address> {
     this.logger.log(`Buscando endereço para o CEP: ${cep}`);
-    const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
-    if (response.status !== 200) {
-      this.logger.error(`Erro ao buscar endereço para o CEP: ${cep}`);
-      throw new Error('Erro ao buscar endereço');
+
+    if (!this.isValidCep(cep)) {
+      this.logger.error(`CEP inválido: ${cep}`);
+      throw new BadRequestException(`CEP inválido: ${cep}`);
     }
-    const data = response.data as Address;
-    if (data.erro) {
-      this.logger.error(`CEP não encontrado: ${cep}`);
-      throw new Error('CEP não encontrado');
+
+    try {
+      const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+      this.logger.log(`Resposta da API ViaCEP: ${JSON.stringify(response.data)}`);
+      if (response.status !== 200) {
+        this.logger.error(`Erro ao buscar endereço para o CEP: ${cep}`);
+        throw new InternalServerErrorException(`Erro ao buscar endereço para o CEP: ${cep}`);
+      }
+      const data = response.data as Address;
+      if (data.erro) {
+        this.logger.error(`CEP não encontrado: ${cep}`);
+        throw new BadRequestException(`CEP não encontrado: ${cep}`);
+      }
+      this.logger.log('Endereço buscado com sucesso');
+      return data;
+    } catch (error) {
+      this.logger.error(`Erro ao buscar endereço para o CEP: ${cep}`, (error as any).stack);
+      if ((error as any).response && (error as any).response.status === 404) {
+        throw new BadRequestException(`CEP não encontrado: ${cep}`);
+      }
+      throw new InternalServerErrorException(`Erro ao buscar endereço para o CEP: ${cep}`);
     }
-    this.logger.log('Endereço buscado com sucesso');
-    return data;
   }
 }
