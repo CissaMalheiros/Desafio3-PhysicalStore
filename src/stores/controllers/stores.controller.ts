@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Param } from '@nestjs/common';
 import { StoresService } from '../services/stores.service';
 import { CreateStoreDto } from '../dto/create-store.dto';
 import { Store } from '../interfaces/store.interface';
@@ -18,7 +18,7 @@ export class StoresController {
   }
 
   @Get('cep/:cep')
-  async findByCep(@Param('cep') cep: string): Promise<Store[]> {
+  async findByCep(@Param('cep') cep: string): Promise<any> {
     return this.storesService.findByCep(cep);
   }
 
@@ -30,5 +30,10 @@ export class StoresController {
   @Get('state/:state')
   async findByState(@Param('state') state: string): Promise<Store[]> {
     return this.storesService.findByState(state);
+  }
+
+  @Delete(':id')
+  async deleteById(@Param('id') id: string): Promise<void> {
+    return this.storesService.deleteById(id);
   }
 }

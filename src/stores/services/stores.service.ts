@@ -15,9 +15,10 @@ export class StoresService {
     private readonly cepService: CepService,
     private readonly geocodingService: GeocodingService,
     private readonly correiosService: CorreiosService,
-  ) { }
+  ) {}
 
   async create(createStoreDto: CreateStoreDto): Promise<Store> {
+    const address = await this.cepService.getAddressByCep(createStoreDto.postalCode);
     const createdStore = new this.storeModel(createStoreDto);
     return createdStore.save();
   }
@@ -50,7 +51,7 @@ export class StoresService {
           ],
         });
       } else {
-        const freightPrice = await this.correiosService.getFreightPrice(store.postalCode, cep, 1, 20, 20, 20);
+        const freightPrice = await this.correiosService.getFreightPrice(store.postalCode, cep, 1, 11, 11, 10);
         nearbyStores.push({
           name: store.storeName,
           city: store.city,
@@ -79,5 +80,12 @@ export class StoresService {
 
   async findByState(state: string): Promise<Store[]> {
     return this.storeModel.find({ state }).exec();
+  }
+
+  async deleteById(id: string): Promise<void> {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Invalid ID format');
+    }
+    await this.storeModel.findByIdAndDelete(new Types.ObjectId(id)).exec();
   }
 }
