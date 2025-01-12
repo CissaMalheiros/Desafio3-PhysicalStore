@@ -1,5 +1,4 @@
 export class CreateStoreDto {
-  readonly storeID: string;
   readonly storeName: string;
   readonly takeOutInStore: boolean;
   readonly shippingTimeInDays: number;

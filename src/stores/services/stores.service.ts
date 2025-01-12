@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { Store } from '../interfaces/store.interface';
 import { CreateStoreDto } from '../dto/create-store.dto';
 import { CepService } from './cep.service';
@@ -17,15 +17,24 @@ export class StoresService {
     private readonly correiosService: CorreiosService,
   ) {}
 
+  private async generateStoreID(): Promise<string> {
+    const lastStore = await this.storeModel.findOne().sort({ storeID: -1 }).exec();
+    const lastStoreID = lastStore ? parseInt(lastStore.storeID, 10) : 0;
+    return (lastStoreID + 1).toString();
+  }
+
   async create(createStoreDto: CreateStoreDto): Promise<Store> {
     const address = await this.cepService.getAddressByCep(createStoreDto.postalCode);
     const coordinates = await this.geocodingService.getCoordinates(`${address.logradouro}, ${address.localidade}, ${address.uf}`);
+    const storeID = await this.generateStoreID();
+
     const createdStore = new this.storeModel({
       ...createStoreDto,
+      storeID,
       latitude: coordinates.lat.toString(),
       longitude: coordinates.lng.toString(),
       address1: address.logradouro,
-      address2: address.complemento,
+      address2: address.bairro || 'Bairro não informado',
       city: address.localidade,
       district: address.bairro,
       state: address.uf,
@@ -86,21 +95,22 @@ export class StoresService {
     }
   }
 
-  async findById(id: string): Promise<Store> {
-    if (!Types.ObjectId.isValid(id)) {
-      throw new BadRequestException('Invalid ID format');
+  async findById(storeID: string): Promise<Store> {
+    const store = await this.storeModel.findOne({ storeID }).exec();
+    if (!store) {
+      throw new BadRequestException('Store not found');
     }
-    return this.storeModel.findById(new Types.ObjectId(id)).exec();
+    return store;
   }
 
   async findByState(state: string): Promise<Store[]> {
     return this.storeModel.find({ state }).exec();
   }
 
-  async deleteById(id: string): Promise<void> {
-    if (!Types.ObjectId.isValid(id)) {
-      throw new BadRequestException('Invalid ID format');
+  async deleteById(storeID: string): Promise<void> {
+    const store = await this.storeModel.findOneAndDelete({ storeID }).exec();
+    if (!store) {
+      throw new BadRequestException('Store not found');
     }
-    await this.storeModel.findByIdAndDelete(new Types.ObjectId(id)).exec();
   }
 }

@@ -1,7 +1,7 @@
 import { Schema } from 'mongoose';
 
 export const StoreSchema = new Schema({
-  storeID: String,
+  storeID: { type: String, unique: true },
   storeName: String,
   takeOutInStore: Boolean,
   shippingTimeInDays: Number,

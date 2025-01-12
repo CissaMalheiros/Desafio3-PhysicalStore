@@ -22,9 +22,9 @@ export class StoresController {
     return this.storesService.findByCep(cep);
   }
 
-  @Get(':id')
-  async findById(@Param('id') id: string): Promise<Store> {
-    return this.storesService.findById(id);
+  @Get(':storeID')
+  async findById(@Param('storeID') storeID: string): Promise<Store> {
+    return this.storesService.findById(storeID);
   }
 
   @Get('state/:state')
@@ -32,8 +32,8 @@ export class StoresController {
     return this.storesService.findByState(state);
   }
 
-  @Delete(':id')
-  async deleteById(@Param('id') id: string): Promise<void> {
-    return this.storesService.deleteById(id);
+  @Delete(':storeID')
+  async deleteById(@Param('storeID') storeID: string): Promise<void> {
+    return this.storesService.deleteById(storeID);
   }
 }
