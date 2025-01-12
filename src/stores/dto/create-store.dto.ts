@@ -3,16 +3,8 @@ export class CreateStoreDto {
   readonly storeName: string;
   readonly takeOutInStore: boolean;
   readonly shippingTimeInDays: number;
-  readonly latitude: string;
-  readonly longitude: string;
-  readonly address1: string;
-  readonly address2: string;
-  readonly address3: string;
-  readonly city: string;
-  readonly district: string;
-  readonly state: string;
-  readonly type: string;
-  readonly country: string;
+  readonly type: string; // PDV | LOJA
+  readonly address3: string; // número da loja
   readonly postalCode: string;
   readonly telephoneNumber: string;
   readonly emailAddress: string;
