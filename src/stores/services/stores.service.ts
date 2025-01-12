@@ -1,12 +1,12 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Store } from './interfaces/store.interface';
-import { CreateStoreDto } from './dto/create-store.dto';
-import { CepService } from './services/cep.service';
-import { GeocodingService } from './services/geocoding.service';
-import { CorreiosService } from './services/correios.service';
-import { calculateDistance } from './utils/distance.utils';
+import { Store } from '../interfaces/store.interface';
+import { CreateStoreDto } from '../dto/create-store.dto';
+import { CepService } from './cep.service';
+import { GeocodingService } from './geocoding.service';
+import { CorreiosService } from './correios.service';
+import { calculateDistance } from '../../common/utils/distance.utils';
 
 @Injectable()
 export class StoresService {
