@@ -72,7 +72,7 @@ export class StoresService {
             ],
           });
         } else {
-          const freightPrice = await this.correiosService.getFreightPrice(store.postalCode, cep, 1, 11, 11, 10);
+          const freightPrice = await this.correiosService.getFreightPrice(store.postalCode, cep);
           nearbyStores.push({
             name: store.storeName,
             city: store.city,
