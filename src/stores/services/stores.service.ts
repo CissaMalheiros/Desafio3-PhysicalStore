@@ -38,7 +38,7 @@ export class StoresService {
     const storeID = await this.generateStoreID();
     const shippingTimeInDays = this.calculateShippingTime(createStoreDto.type);
 
-    const createdStore = new this.storeModel({
+    const createdStore = await this.storeModel.create({
       ...createStoreDto,
       storeID,
       shippingTimeInDays,
@@ -51,7 +51,7 @@ export class StoresService {
       state: address.uf,
       country: 'Brasil',
     });
-    return createdStore.save();
+    return createdStore;
   }
 
   async findAll(): Promise<Store[]> {
