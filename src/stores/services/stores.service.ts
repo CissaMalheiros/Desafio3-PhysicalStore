@@ -34,7 +34,7 @@ export class StoresService {
       latitude: coordinates.lat.toString(),
       longitude: coordinates.lng.toString(),
       address1: address.logradouro,
-      address2: address.bairro || 'Bairro não informado',
+      address2: address.complemento || 'Complemento não informado',
       city: address.localidade,
       district: address.bairro,
       state: address.uf,
@@ -44,7 +44,11 @@ export class StoresService {
   }
 
   async findAll(): Promise<Store[]> {
-    return this.storeModel.find().exec();
+    try {
+      return await this.storeModel.find().exec();
+    } catch (error) {
+      throw new InternalServerErrorException('Erro ao buscar todas as lojas');
+    }
   }
 
   async findByCep(cep: string): Promise<any> {
@@ -96,21 +100,33 @@ export class StoresService {
   }
 
   async findById(storeID: string): Promise<Store> {
-    const store = await this.storeModel.findOne({ storeID }).exec();
-    if (!store) {
-      throw new BadRequestException('Store not found');
+    try {
+      const store = await this.storeModel.findOne({ storeID }).exec();
+      if (!store) {
+        throw new BadRequestException('Store not found');
+      }
+      return store;
+    } catch (error) {
+      throw new InternalServerErrorException('Erro ao buscar loja por ID');
     }
-    return store;
   }
 
   async findByState(state: string): Promise<Store[]> {
-    return this.storeModel.find({ state }).exec();
+    try {
+      return await this.storeModel.find({ state }).exec();
+    } catch (error) {
+      throw new InternalServerErrorException('Erro ao buscar lojas por estado');
+    }
   }
 
   async deleteById(storeID: string): Promise<void> {
-    const store = await this.storeModel.findOneAndDelete({ storeID }).exec();
-    if (!store) {
-      throw new BadRequestException('Store not found');
+    try {
+      const store = await this.storeModel.findOneAndDelete({ storeID }).exec();
+      if (!store) {
+        throw new BadRequestException('Store not found');
+      }
+    } catch (error) {
+      throw new InternalServerErrorException('Erro ao deletar loja por ID');
     }
   }
 }
