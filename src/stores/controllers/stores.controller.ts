@@ -33,7 +33,7 @@ export class StoresController {
   }
 
   @Delete(':storeID')
-  async deleteById(@Param('storeID') storeID: string): Promise<void> {
+  async deleteById(@Param('storeID') storeID: string): Promise<{ message: string }> {
     return this.storesService.deleteById(storeID);
   }
 }

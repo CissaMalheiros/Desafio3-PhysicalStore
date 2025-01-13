@@ -119,12 +119,13 @@ export class StoresService {
     }
   }
 
-  async deleteById(storeID: string): Promise<void> {
+  async deleteById(storeID: string): Promise<{ message: string }> {
     try {
       const store = await this.storeModel.findOneAndDelete({ storeID }).exec();
       if (!store) {
         throw new BadRequestException('Store not found');
       }
+      return { message: 'Store deleted successfully' };
     } catch (error) {
       throw new InternalServerErrorException('Erro ao deletar loja por ID');
     }
