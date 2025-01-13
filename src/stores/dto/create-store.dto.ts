@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsEmail, IsIn, IsOptional, IsString } from 'class-validator';
+import { IsString, IsBoolean, IsIn, Matches, IsEmail } from 'class-validator';
 
 export class CreateStoreDto {
   @ApiProperty({ example: 'Loja Teste' })
@@ -20,7 +20,7 @@ export class CreateStoreDto {
   readonly address3: string; // número da loja
 
   @ApiProperty({ example: '01001000' })
-  @IsString()
+  @Matches(/^[0-9]{8}$/, { message: 'postalCode must be a valid postal code without hyphen' })
   readonly postalCode: string;
 
   @ApiProperty({ example: '9912345678' })

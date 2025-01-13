@@ -20,7 +20,7 @@ export class CepService {
   private readonly logger = new Logger(CepService.name);
 
   private isValidCep(cep: string): boolean {
-    const cepRegex = /^[0-9]{5}-?[0-9]{3}$/;
+    const cepRegex = /^[0-9]{8}$/;
     return cepRegex.test(cep);
   }
 
