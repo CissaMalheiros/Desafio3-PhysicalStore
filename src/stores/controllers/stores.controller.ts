@@ -5,7 +5,7 @@ import { Store } from '../interfaces/store.interface';
 
 @Controller('stores')
 export class StoresController {
-  constructor(private readonly storesService: StoresService) {}
+  constructor(private readonly storesService: StoresService) { }
 
   @Post()
   async create(@Body() createStoreDto: CreateStoreDto) {

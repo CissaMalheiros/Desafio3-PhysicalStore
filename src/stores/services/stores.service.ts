@@ -23,14 +23,25 @@ export class StoresService {
     return (lastStoreID + 1).toString();
   }
 
+  private calculateShippingTime(type: string): number {
+    if (type === 'PDV') {
+      return 1; // 1 dia útil para PDV
+    } else if (type === 'LOJA') {
+      return 2; // 2 dias úteis para LOJA
+    }
+    return 2;
+  }
+
   async create(createStoreDto: CreateStoreDto): Promise<Store> {
     const address = await this.cepService.getAddressByCep(createStoreDto.postalCode);
     const coordinates = await this.geocodingService.getCoordinates(`${address.logradouro}, ${address.localidade}, ${address.uf}`);
     const storeID = await this.generateStoreID();
+    const shippingTimeInDays = this.calculateShippingTime(createStoreDto.type);
 
     const createdStore = new this.storeModel({
       ...createStoreDto,
       storeID,
+      shippingTimeInDays,
       latitude: coordinates.lat.toString(),
       longitude: coordinates.lng.toString(),
       address1: address.logradouro,
