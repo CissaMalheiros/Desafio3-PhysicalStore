@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsBoolean, IsIn, IsPostalCode, IsPhoneNumber, IsEmail } from 'class-validator';
+import { IsBoolean, IsEmail, IsIn, IsOptional, IsString } from 'class-validator';
 
 export class CreateStoreDto {
   @ApiProperty({ example: 'Loja Teste' })
@@ -19,12 +19,12 @@ export class CreateStoreDto {
   @IsString()
   readonly address3: string; // número da loja
 
-  @ApiProperty({ example: '01001-000' })
-  @IsPostalCode('BR')
+  @ApiProperty({ example: '01001000' })
+  @IsString()
   readonly postalCode: string;
 
-  @ApiProperty({ example: '99 12345678' })
-  @IsPhoneNumber('BR')
+  @ApiProperty({ example: '9912345678' })
+  @IsString()
   readonly telephoneNumber: string;
 
   @ApiProperty({ example: 'emailteste@gmail.com' })

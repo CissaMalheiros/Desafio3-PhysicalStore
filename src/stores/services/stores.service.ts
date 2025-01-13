@@ -15,7 +15,7 @@ export class StoresService {
     private readonly cepService: CepService,
     private readonly geocodingService: GeocodingService,
     private readonly correiosService: CorreiosService,
-  ) {}
+  ) { }
 
   private async generateStoreID(): Promise<string> {
     const lastStore = await this.storeModel.findOne().sort({ storeID: -1 }).exec();
@@ -71,6 +71,12 @@ export class StoresService {
 
       for (const store of stores) {
         const distance = calculateDistance(coordinates.lat, coordinates.lng, parseFloat(store.latitude), parseFloat(store.longitude));
+
+        if (store.type === 'PDV' && distance > 50) {
+          // Não listar PDVs a mais de 50km
+          continue;
+        }
+
         if (distance <= 50) {
           nearbyStores.push({
             name: store.storeName,
@@ -98,6 +104,9 @@ export class StoresService {
           });
         }
       }
+
+      // Ordenar todas as lojas por proximidade
+      nearbyStores.sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance));
 
       return {
         stores: nearbyStores,
